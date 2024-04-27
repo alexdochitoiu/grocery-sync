@@ -7,6 +7,11 @@ import { FormEvent } from "react";
 export default function Register() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (e.currentTarget.password.value !== e.currentTarget.confirmPassword.value) {
+      alert("Passwords do not match");
+      return;
+    }
+    
   };
 
   return (
@@ -16,18 +21,21 @@ export default function Register() {
         <input
           type="email"
           name="email"
+          required
           placeholder="Email"
           className="input mb-2"
         />
         <input
           type="password"
           name="password"
+          required
           placeholder="Password"
           className="input mb-2"
         />
         <input
           type="password"
           name="confirmPassword"
+          required
           placeholder="Confirm password"
           className="input mb-2"
         />
