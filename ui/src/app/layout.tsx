@@ -2,6 +2,7 @@ import "@/globals.css";
 
 import type { Metadata } from "next";
 import Header from "@/shared/components/Header";
+import Provider from "@/shared/components/Provider";
 
 export const metadata: Metadata = {
   title: "Grocery Sync",
@@ -16,8 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gradient-to-r from-indigo-50 via-cyan-50 to-indigo-50">
-        <Header />
-        {children}
+        <Provider>
+          <Header />
+          {children}
+        </Provider>
       </body>
     </html>
   );

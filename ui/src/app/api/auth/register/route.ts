@@ -1,23 +1,12 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { PutCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from "uuid";
-import dotenv from "dotenv";
 import { RegisterSchema, RegisterFormData } from "@/shared/types/Register";
 import { ZodError, z } from "zod";
+import getDynamoDBDocClient from "../../getDynamoDBDocClient";
 
-dotenv.config();
-
-const client = new DynamoDBClient({
-  region: process.env.AWS_REGION!,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
-
-const docClient = DynamoDBDocumentClient.from(client);
+const docClient = getDynamoDBDocClient();
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
