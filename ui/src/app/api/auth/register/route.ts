@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from "uuid";
 import { RegisterSchema, RegisterFormData } from "@/shared/types/Register";
-import { ZodError, z } from "zod";
-import getDynamoDBDocClient from "../../getDynamoDBDocClient";
-
-const docClient = getDynamoDBDocClient();
+import { ZodError } from "zod";
+import { createUser } from "@/shared/database/services/user";
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
@@ -16,17 +13,11 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const hashedPassword = await hash(body.password, 10);
 
-    const command = new PutCommand({
-      TableName: "users",
-      Item: {
-        id: uuidv4(),
-        email: body.email,
-        hashedPassword,
-      },
+    await createUser({
+      id: uuidv4(),
+      email: body.email,
+      hashedPassword,
     });
-
-    const response = await docClient.send(command);
-    console.log(response);
 
     return NextResponse.json(
       { message: "User successfully registered!" },

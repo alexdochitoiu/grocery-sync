@@ -1,10 +1,8 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
-import getDynamoDBDocClient from "../../getDynamoDBDocClient";
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
-
-const docClient = getDynamoDBDocClient();
+import { getUserByEmail } from "@/shared/database/services/user";
+import { omit } from "lodash";
 
 const handler = NextAuth({
   session: {
@@ -19,21 +17,13 @@ const handler = NextAuth({
         email: {},
         password: {},
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) {
           return null;
         }
 
-        const command = new GetCommand({
-          TableName: "users",
-          Key: {
-            email: credentials.email,
-          },
-        });
-
         try {
-          const response = await docClient.send(command);
-          const user = response.Item;
+          const user = await getUserByEmail(credentials.email);
 
           if (!user) {
             return null;
@@ -61,8 +51,9 @@ const handler = NextAuth({
   ],
   callbacks: {
     async session({ session }) {
-      // TODO: Fetch user data from the database
-      session.user = { ...session.user, id: "test" };
+      const user = await getUserByEmail(session?.user?.email as string);
+      session.user = { ...session.user, ...omit(user, "hashedPassword") };
+
       return session;
     },
   },
