@@ -25,7 +25,6 @@ export default function LoginForm() {
       redirect: false,
     });
 
-    console.log({ response });
     if (!response?.error) {
       router.push("/");
       router.refresh();
