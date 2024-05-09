@@ -1,10 +1,10 @@
-import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { ShoppingList } from "../types/ShoppingList";
 import getDynamoDBDocClient from "../getDynamoDBDocClient";
 
 const docClient = getDynamoDBDocClient();
 
-async function createShoppingList(shoppingList: ShoppingList): Promise<void> {
+export async function createShoppingList(shoppingList: ShoppingList): Promise<void> {
   const command = new PutCommand({
     TableName: "shoppingLists",
     Item: shoppingList,
@@ -13,7 +13,7 @@ async function createShoppingList(shoppingList: ShoppingList): Promise<void> {
   await docClient.send(command);
 }
 
-async function getShoppingLists(): Promise<ShoppingList[]> {
+export async function getShoppingLists(): Promise<ShoppingList[]> {
   const command = new ScanCommand({
     TableName: "shoppingLists",
   });
@@ -23,4 +23,13 @@ async function getShoppingLists(): Promise<ShoppingList[]> {
   return response.Items as ShoppingList[];
 }
 
-export { createShoppingList, getShoppingLists };
+export async function getShoppingListById(id: string): Promise<ShoppingList> {
+  const command = new GetCommand({
+    TableName: "shoppingLists",
+    Key: { id },
+  });
+
+  const response = await docClient.send(command);
+
+  return response.Item as ShoppingList;
+}

@@ -1,6 +1,7 @@
 import { ShoppingList } from "@/shared/database/types/ShoppingList";
 import Button from "./Button";
 import { useMemo } from "react";
+import Link from "next/link";
 
 export default function ShoppingListCard({
   shoppingList,
@@ -20,8 +21,7 @@ export default function ShoppingListCard({
   );
 
   const toBuyCount = useMemo(
-    () =>
-      shoppingList.items.filter((item) => item.status === "To Buy").length,
+    () => shoppingList.items.filter((item) => item.status === "To Buy").length,
     [shoppingList.items]
   );
 
@@ -36,7 +36,8 @@ export default function ShoppingListCard({
       </div>
       <p className="text-gray-600">{shoppingList.items.length} items</p>
       <p className="text-gray-500 text-sm">
-        ({purchasedCount} ✅ Purchased | {notFoundCount} ❌ Not found | {toBuyCount} 🔜 To buy)
+        ({purchasedCount} ✅ Purchased | {notFoundCount} ❌ Not found |{" "}
+        {toBuyCount} 🔜 To buy)
       </p>
       <div className="flex items-center justify-between mt-4">
         <p className="text-xs text-gray-400 text-right">
@@ -44,7 +45,9 @@ export default function ShoppingListCard({
             ? `Updated on ${new Date(parseInt(shoppingList.updatedAt)).toLocaleString()}`
             : ""}
         </p>
-        <Button variant="primary">View</Button>
+        <Link href={`/shopping-lists/${shoppingList.id}`}>
+          <Button variant="primary">View</Button>
+        </Link>
       </div>
     </div>
   );
